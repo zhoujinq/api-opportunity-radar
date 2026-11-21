@@ -1,0 +1,36 @@
+[
+  {
+    "id": "n8n",
+    "name": "n8n",
+    "source": { "label": "官方 GitHub · n8n-io/n8n", "url": "https://github.com/n8n-io/n8n" },
+    "signal": "官方仓库将产品描述为带原生 AI 能力的可视化工作流平台，支持自托管、云端与 400+ 集成。",
+    "hypothesis": "正在把 Agent 接入真实业务流程的团队，可能需要可观测、可切换模型的 API 方案；这只是销售假设，不代表采购意向。",
+    "buyer": "自动化平台 / 开发者生态 / 技术合作负责人",
+    "nextAction": "找 1 个公开工作流案例，访谈维护者：模型调用如何观测、计费和切换？",
+    "status": "pending",
+    "scores": { "signal": 5, "fit": 5, "timing": 3, "access": 2 }
+  },
+  {
+    "id": "dify",
+    "name": "Dify",
+    "source": { "label": "官方 GitHub · langgenius/dify", "url": "https://github.com/langgenius/dify" },
+    "signal": "官方仓库公开展示 Agentic Workflow、RAG、模型管理，以及云端、VPC、自托管等部署路径。",
+    "hypothesis": "从原型走向生产的团队，可能更关心稳定性、成本与模型组合，而不是再增加一个模型名称；需通过真实用例验证。",
+    "buyer": "AI 应用平台 / 解决方案 / 开发者体验负责人",
+    "nextAction": "用同一 RAG 任务做一份 20 分钟模型 API 对照样例，只展示可复现指标。",
+    "status": "pending",
+    "scores": { "signal": 5, "fit": 5, "timing": 4, "access": 3 }
+  },
+  {
+    "id": "flowise",
+    "name": "Flowise",
+    "source": { "label": "官方 GitHub · FlowiseAI/Flowise", "url": "https://github.com/FlowiseAI/Flowise" },
+    "signal": "官方仓库已标记 Public archive，README 指向 Future of Flowise 讨论。",
+    "hypothesis": "归档是反信号：不应仅凭历史热度安排主动触达，先确认项目治理与迁移去向。",
+    "buyer": "不适用；本卡仅保留生态观察",
+    "nextAction": "阅读归档讨论并记录迁移线索，本周不做销售触达。",
+    "status": "hold",
+    "archived": true,
+    "scores": { "signal": 5, "fit": 2, "timing": 1, "access": 1 }
+  }
+]

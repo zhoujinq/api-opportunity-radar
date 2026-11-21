@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#F7F3EC">
+  <meta name="description" content="把公开技术信号变成待人工验证的商机卡，把 Agent 使用记录变成用户本人的成长复盘。可自定义、可审核、可导出。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23335747'/%3E%3Cpath d='M14 40h10l6-18 8 28 6-16h6' fill='none' stroke='%23F7F3EC' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <title>AI API 商机雷达 · 公开信号 × 人的成长</title>
+  <style>
+    @font-face{font-family:Maple;src:url('assets/fonts/maple-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+    @font-face{font-family:Maple;src:url('assets/fonts/maple-bold.woff2') format('woff2');font-weight:600;font-display:swap}
+    @font-face{font-family:NotoSC;src:url('assets/fonts/noto-sans-sc-variable.woff2') format('woff2');font-weight:100 900;font-display:swap}
+    :root{--paper:#F7F3EC;--surface:#FDFBF7;--ink:#262823;--muted:#6E776E;--line:#E3DED4;--accent:#335747;--accent-dark:#274537;--clay:#9A5F4A;--font:'NotoSC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--mono:'Maple',monospace;--radius:4px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--paper);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
+    button,input,textarea,select{font:inherit}
+    button,a{touch-action:manipulation}
+    button{cursor:pointer}
+    a{color:var(--accent);text-underline-offset:3px}
+    a:hover{color:var(--accent-dark)}
+    :focus-visible{outline:3px solid #7A9B87;outline-offset:3px}
+    .wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+    .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+    .site-header{border-bottom:1px solid var(--line);background:rgba(247,243,236,.96)}
+    .header-inner{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand-mark{width:28px;height:28px;display:grid;place-items:center;background:var(--accent);color:var(--surface);border-radius:var(--radius);font-family:var(--mono);font-size:13px;font-weight:600}
+    .brand-name{font-weight:700;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nav{display:flex;align-items:center;gap:24px;font-size:14px}
+    .nav a{color:var(--muted);text-decoration:none}
+    .nav a:hover{color:var(--accent)}
+    .header-actions{display:flex;gap:10px;align-items:center}
+    .btn{min-height:42px;padding:8px 18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:border-color .18s ease,background .18s ease}
+    .btn:hover{border-color:var(--accent);background:#fff}
+    .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .btn-primary:hover{background:var(--accent-dark);color:#fff}
+    .btn-quiet{background:transparent;border-color:transparent;color:var(--muted);padding-inline:10px}
+    .btn-small{min-height:38px;padding:6px 14px;font-size:14px}
+    .hero{padding:72px 0 54px;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.7fr);gap:80px;align-items:end}
+    .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--accent);margin-bottom:20px}
+    h1{font-size:clamp(30px,4vw,48px);line-height:1.35;letter-spacing:-.035em;font-weight:700;max-width:740px}
+    .hero-copy{margin-top:22px;color:var(--muted);max-width:650px;font-size:17px}
+    .demo-note{margin-top:24px;padding-left:14px;border-left:2px solid var(--accent);font-size:13px;color:var(--muted);max-width:650px}
+    .weekly-board{border-top:1px solid var(--ink);padding-top:18px}
+    .board-label{font-size:13px;color:var(--muted);margin-bottom:14px}
+    .board-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+    .stat strong{display:block;font-family:var(--mono);font-size:30px;line-height:1.2;font-weight:400}
+    .stat span{font-size:12px;color:var(--muted)}
+    .board-focus{font-size:14px;border-top:1px solid var(--line);padding-top:16px}
+    .board-focus strong{display:block;color:var(--accent);margin-bottom:4px}
+    .workspace{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:64px;align-items:start;padding-bottom:80px}
+    .main-flow{min-width:0}
+    .side-rail{position:sticky;top:24px;border-top:1px solid var(--ink);padding-top:18px}
+    .side-rail h2{font-size:16px;margin-bottom:16px}
+    .side-actions{display:grid;gap:10px;margin-bottom:24px}
+    .side-actions .btn{width:100%}
+    .rule-list{list-style:none;border-top:1px solid var(--line)}
+    .rule-list li{padding:13px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted);display:flex;gap:10px}
+    .rule-list li::before{content:'—';color:var(--accent);font-family:var(--mono)}
+    .local-note{font-size:12px;color:var(--muted);margin-top:18px}
+    .section{padding:38px 0 56px;border-top:1px solid var(--ink)}
+    .section-heading{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:16px}
+    .section-title{display:flex;align-items:baseline;gap:14px}
+    .section-index{font-family:var(--mono);font-size:12px;color:var(--accent)}
+    h2{font-size:24px;line-height:1.4;letter-spacing:-.02em}
+    .section-desc{font-size:14px;color:var(--muted);max-width:640px;margin-bottom:22px}
+    .opportunity{padding:28px 0 30px;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(140px,.38fr) minmax(0,1.62fr);gap:30px}
+    .opportunity:last-child{border-bottom:1px solid var(--line)}
+    .opp-identity{min-width:0}
+    .opp-name{font-size:21px;font-weight:700;line-height:1.35;margin:7px 0 10px;overflow-wrap:anywhere}
+    .source-link{font-size:12px;display:inline-block;max-width:100%;overflow-wrap:anywhere}
+    .score{margin-top:20px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+    .score-bar{height:2px;background:var(--line);margin-top:8px;max-width:120px}
+    .score-bar span{display:block;height:2px;background:var(--accent)}
+    .opp-body{min-width:0}
+    .signal{font-size:16px;line-height:1.8;margin-bottom:16px}
+    .hypothesis{font-size:15px;color:var(--muted);margin-bottom:20px}
+    .hypothesis strong{color:var(--clay);font-weight:500}
+    .opp-meta{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:18px 0 22px}
+    .meta-label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+    .meta-value{font-size:14px;line-height:1.7}
+    .review-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .status{display:inline-flex;align-items:center;min-height:26px;padding:2px 9px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--muted);white-space:nowrap}
+    .status.follow{color:var(--accent);border-color:#9CB3A5;background:#F1F5F0}
+    .status.hold{color:var(--clay);border-color:#D8B9A9;background:#FAF1EB}
+    .review-buttons{display:flex;gap:8px}
+    .review-buttons .active{border-color:var(--accent);color:var(--accent);background:#F1F5F0}
+    .empty{padding:34px 0;border-block:1px solid var(--line);color:var(--muted);font-size:14px}
+    .growth-list{border-top:1px solid var(--line)}
+    .growth-item{padding:30px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:34px minmax(0,1fr);gap:18px}
+    .growth-marker{font-family:var(--mono);font-size:12px;color:var(--accent);padding-top:5px}
+    .growth-item h3{font-size:19px;line-height:1.6;margin-bottom:16px;font-weight:500}
+    .evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}
+    .evidence-cell{font-size:14px;color:var(--muted)}
+    .evidence-cell strong{display:block;font-size:12px;color:var(--ink);font-weight:500;margin-bottom:3px}
+    .business-link{margin-top:20px;padding:14px 16px;background:#F0EEE5;border-left:2px solid var(--accent);font-size:14px}
+    .business-link strong{color:var(--accent);font-weight:500}
+    .next-experiment{margin-top:14px;font-size:14px}
+    .method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:24px}
+    .method-item{border-top:1px solid var(--line);padding-top:16px}
+    .method-item h3{font-size:15px;margin-bottom:8px}
+    .method-item p{font-size:13px;color:var(--muted)}
+    footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:12px}
+    .footer-inner{display:flex;justify-content:space-between;gap:20px;align-items:center}
+    .footer-links{display:flex;gap:18px}
+    dialog{width:min(700px,calc(100% - 32px));max-height:90vh;overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);padding:28px;box-shadow:0 24px 80px rgba(38,40,35,.16)}
+    dialog::backdrop{background:rgba(38,40,35,.42)}
+    .dialog-head{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px}
+    .dialog-head h2{font-size:22px}
+    .close-btn{border:0;background:transparent;color:var(--muted);font-size:24px;width:44px;height:44px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .field{display:grid;gap:6px;min-width:0}
+    .field.full{grid-column:1/-1}
+    .field label{font-size:13px;font-weight:500}
+    .field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:var(--radius);background:#fff;color:var(--ink);padding:10px 12px;min-height:44px}
+    .field textarea{min-height:92px;resize:vertical;line-height:1.65}
+    .field small{font-size:12px;color:var(--muted)}
+    .form-error{min-height:24px;color:var(--clay);font-size:13px;margin-top:12px}
+    .dialog-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:10px}
+    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:var(--radius);font-size:14px;opacity:0;pointer-events:none;transition:opacity .18s ease;z-index:20;max-width:calc(100% - 32px);text-align:center}
+    .toast.show{opacity:1}
+    @media(max-width:960px){.nav{display:none}.hero{gap:40px;grid-template-columns:1.25fr .75fr}.workspace{grid-template-columns:1fr;gap:0}.side-rail{position:static;order:-1;margin-bottom:36px}.side-actions{grid-template-columns:repeat(3,1fr)}.rule-list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;border-top:0}.rule-list li{border-top:1px solid var(--line)}.local-note{margin-top:14px}}
+    @media(max-width:680px){.wrap{padding:0 20px}.header-inner{min-height:68px;gap:12px}.brand-name{max-width:210px}.header-actions .btn-primary{display:none}.hero{padding:46px 0 38px;grid-template-columns:1fr;gap:36px}.hero-copy{font-size:16px}h1{font-size:29px}.weekly-board{padding-top:14px}.board-stats{max-width:320px}.workspace{padding-bottom:52px}.side-actions{grid-template-columns:1fr 1fr}.side-actions .btn-primary{grid-column:1/-1}.rule-list{grid-template-columns:1fr;gap:0}.section{padding:30px 0 42px}.section-heading{align-items:flex-start;flex-direction:column}.section-heading .btn{width:100%}h2{font-size:22px}.opportunity{grid-template-columns:1fr;gap:14px;padding:24px 0}.score{margin-top:12px}.opp-meta,.evidence-grid,.method-grid,.form-grid{grid-template-columns:1fr}.review-row{align-items:flex-start;flex-direction:column}.review-buttons{width:100%}.review-buttons .btn{flex:1;min-height:44px}.growth-item{grid-template-columns:24px minmax(0,1fr);gap:10px}.growth-item h3{font-size:17px}.footer-inner{align-items:flex-start;flex-direction:column}.footer-links{flex-wrap:wrap}.field.full{grid-column:auto}dialog{padding:22px 18px}.dialog-actions .btn{flex:1}.demo-note{font-size:12px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">R/</span><span class="brand-name" data-radar-name>AI API 商机雷达</span></div>
+      <nav class="nav" aria-label="页内导航"><a href="#opportunities">商机审阅</a><a href="#growth">人的成长</a><a href="#method">方法边界</a></nav>
+      <div class="header-actions"><button class="btn btn-primary btn-small" type="button" data-action="export">导出周报</button><button class="btn btn-small" type="button" data-open="settings-dialog">自定义</button></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <p class="eyebrow">公开信号 × 人的成长</p>
+        <h1 id="hero-title">不是更多新闻，<br>是下一次值得跟进的理由。</h1>
+        <p class="hero-copy"><span data-radar-name>AI API 商机雷达</span>把公开技术信号整理成少量可审核的商机卡，也把 Agent 使用记录还原成“我本人学会了什么”。两条证据链，最后都落到下一动作。</p>
+        <p class="demo-note">演示快照：公开信号来自官方页面；商业假设均待人工验证，不代表采购意向。成长条目依据用户提供的成长日志脱敏抽象，不公开原始聊天。</p>
+      </div>
+      <aside class="weekly-board" aria-label="本周进度">
+        <p class="board-label mono" data-period>2026.11.16—11.22</p>
+        <p class="board-label" data-focus>海外 AI 应用与自动化团队 / 模型 API 集成</p>
+        <div class="board-stats">
+          <div class="stat"><strong id="stat-total">03</strong><span>张商机卡</span></div>
+          <div class="stat"><strong id="stat-growth">02</strong><span>条成长证据</span></div>
+          <div class="stat"><strong id="stat-follow">00</strong><span>条进入跟进</span></div>
+        </div>
+        <p class="board-focus"><strong>本周唯一聚焦</strong>先验证，再触达；先沉淀证据，再扩大自动化。</p>
+      </aside>
+    </section>
+
+    <div class="workspace">
+      <div class="main-flow">
+        <section class="section" id="opportunities" aria-labelledby="opportunities-title">
+          <div class="section-heading">
+            <div><div class="section-title"><span class="section-index">01</span><h2 id="opportunities-title">商机审阅</h2></div><p class="section-desc">公开信号只说明“值得问一个问题”。是否成为商机，要经过人的判断。</p></div>
+            <button class="btn btn-small" type="button" data-open="opportunity-dialog">＋ 新增商机</button>
+          </div>
+          <div id="opportunity-list"></div>
+        </section>
+
+        <section class="section" id="growth" aria-labelledby="growth-title">
+          <div class="section-heading">
+            <div><div class="section-title"><span class="section-index">02</span><h2 id="growth-title">人的成长</h2></div><p class="section-desc">不复述“Agent 做了多少”，只保留用户能力发生变化的证据，以及它怎样改善下一次商业产出。</p></div>
+            <button class="btn btn-small" type="button" data-open="growth-dialog">＋ 新增成长</button>
+          </div>
+          <div class="growth-list" id="growth-list"></div>
+        </section>
+
+        <section class="section" id="method" aria-labelledby="method-title">
+          <div class="section-title"><span class="section-index">03</span><h2 id="method-title">方法边界</h2></div>
+          <div class="method-grid">
+            <article class="method-item"><h3>事实与假设分栏</h3><p>官方仓库、公开文档是事实来源；买方角色、需求与下一动作是待证伪假设，二者不混写。</p></article>
+            <article class="method-item"><h3>成长与流水账分栏</h3><p>只有行为前后变化、证据定位与下一实验同时存在，才记为成长；工具调用次数本身不是能力。</p></article>
+            <article class="method-item"><h3>演示与生产分栏</h3><p>本页是 MVP 演示快照，没有实时爬取、自动触达或真实成交归因。正式使用请从 Skill 初始化独立工作区。</p></article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-rail" aria-label="周报操作与审核规则">
+        <h2>本周工作台</h2>
+        <div class="side-actions"><button class="btn btn-primary" type="button" data-action="export">导出 Markdown</button><button class="btn" type="button" data-open="settings-dialog">自定义雷达</button><button class="btn btn-quiet" type="button" data-action="reset">清空本地修改</button></div>
+        <ul class="rule-list"><li>每张卡必须有可打开的公开来源</li><li>没有下一动作，就不算一张商机卡</li><li>没有对话定位，就不算一条成长证据</li></ul>
+        <p class="local-note">修改只保存在当前浏览器。导出后可提交到自己的私密工作区；公开分享前请再次脱敏。</p>
+      </aside>
+    </div>
+  </main>
+
+  <footer><div class="wrap footer-inner"><p><span data-radar-name>AI API 商机雷达</span> · MVP 0.1.0 · 静态、本地、可导出</p><div class="footer-links"><a href="https://github.com/zhoujinq" target="_blank" rel="noopener">GitHub</a><a href="https://zhoujinq.github.io/" target="_blank" rel="noopener">个人主页</a><a href="docs/requirements-matrix.md">需求矩阵</a></div></div></footer>
+
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <form id="settings-form" novalidate>
+      <div class="dialog-head"><h2 id="settings-title">自定义你的雷达</h2><button class="close-btn" type="button" data-close aria-label="关闭">×</button></div>
+      <div class="form-grid">
+        <div class="field full"><label for="config-name">雷达名称</label><input id="config-name" name="name" required maxlength="60"><small>例如：AI API 商机雷达、机器人出海雷达，或只叫“商机雷达”。</small></div>
+        <div class="field full"><label for="config-focus">关注方向</label><textarea id="config-focus" name="focus" required maxlength="240"></textarea></div>
+        <div class="field"><label for="config-period">周报周期</label><input id="config-period" name="period" required maxlength="60"></div>
+        <div class="field"><label for="config-max">每周最多商机卡</label><input id="config-max" name="maxCards" type="number" min="1" max="10" required></div>
+      </div>
+      <p class="form-error" role="alert"></p><div class="dialog-actions"><button class="btn" type="button" data-close>取消</button><button class="btn btn-primary" type="submit">保存配置</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="opportunity-dialog" aria-labelledby="opportunity-form-title">
+    <form id="opportunity-form" novalidate>
+      <div class="dialog-head"><h2 id="opportunity-form-title">新增一张商机卡</h2><button class="close-btn" type="button" data-close aria-label="关闭">×</button></div>
+      <div class="form-grid">
+        <div class="field"><label for="opp-name">项目 / 公司公开名称</label><input id="opp-name" name="name" required maxlength="100"></div>
+        <div class="field"><label for="opp-url">公开来源（HTTPS）</label><input id="opp-url" name="url" type="url" required placeholder="https://github.com/org/repo"></div>
+        <div class="field full"><label for="opp-signal">公开信号</label><textarea id="opp-signal" name="signal" required maxlength="600"></textarea><small>只写来源能支持的事实。</small></div>
+        <div class="field full"><label for="opp-hypothesis">商业假设</label><textarea id="opp-hypothesis" name="hypothesis" required maxlength="600"></textarea><small>必须写成待验证假设，不写“客户一定会买”。</small></div>
+        <div class="field"><label for="opp-buyer">待验证的买方角色</label><input id="opp-buyer" name="buyer" required maxlength="160"></div>
+        <div class="field"><label for="opp-next">下一动作</label><input id="opp-next" name="nextAction" required maxlength="240"></div>
+      </div>
+      <p class="form-error" role="alert"></p><div class="dialog-actions"><button class="btn" type="button" data-close>取消</button><button class="btn btn-primary" type="submit">加入审阅</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="growth-dialog" aria-labelledby="growth-form-title">
+    <form id="growth-form" novalidate>
+      <div class="dialog-head"><h2 id="growth-form-title">新增一条人的成长</h2><button class="close-btn" type="button" data-close aria-label="关闭">×</button></div>
+      <div class="form-grid">
+        <div class="field full"><label for="growth-lesson">我学会了什么</label><textarea id="growth-lesson" name="lesson" required maxlength="500"></textarea></div>
+        <div class="field"><label for="growth-project">来源项目</label><input id="growth-project" name="project" required maxlength="160"></div>
+        <div class="field"><label for="growth-conversation">对话定位</label><input id="growth-conversation" name="conversation" required maxlength="200" placeholder="日期时间 / 对话主题"></div>
+        <div class="field full"><label for="growth-evidence">行为证据与结论边界</label><textarea id="growth-evidence" name="evidence" required maxlength="600"></textarea><small>不要粘贴原始聊天，只写脱敏后的可核验变化。</small></div>
+        <div class="field full"><label for="growth-business">与商业产出的关联</label><textarea id="growth-business" name="businessLink" required maxlength="500"></textarea></div>
+        <div class="field full"><label for="growth-next">下一周实验</label><input id="growth-next" name="nextExperiment" required maxlength="240"></div>
+      </div>
+      <p class="form-error" role="alert"></p><div class="dialog-actions"><button class="btn" type="button" data-close>取消</button><button class="btn btn-primary" type="submit">加入成长复盘</button></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript>请启用 JavaScript 以审核商机、编辑成长并导出周报。</noscript>
+
+  <script id="initial-data">
+    const INITIAL_DATA = {
+      config: { name: 'AI API 商机雷达', focus: '海外 AI 应用与自动化团队 / 模型 API 集成', period: '2026.11.16—11.22', maxCards: 5 },
+      opportunities: [
+        {
+          id: 'n8n', name: 'n8n', source: { label: '官方 GitHub · n8n-io/n8n', url: 'https://github.com/n8n-io/n8n' },
+          signal: '官方仓库将产品描述为带原生 AI 能力的可视化工作流平台，支持自托管、云端与 400+ 集成。',
+          hypothesis: '正在把 Agent 接入真实业务流程的团队，可能需要可观测、可切换模型的 API 方案；这只是销售假设，不代表采购意向。',
+          buyer: '自动化平台 / 开发者生态 / 技术合作负责人',
+          nextAction: '找 1 个公开工作流案例，访谈维护者：模型调用如何观测、计费和切换？',
+          status: 'pending', scores: { signal: 5, fit: 5, timing: 3, access: 2 }
+        },
+        {
+          id: 'dify', name: 'Dify', source: { label: '官方 GitHub · langgenius/dify', url: 'https://github.com/langgenius/dify' },
+          signal: '官方仓库公开展示 Agentic Workflow、RAG、模型管理，以及云端、VPC、自托管等部署路径。',
+          hypothesis: '从原型走向生产的团队，可能更关心稳定性、成本与模型组合，而不是再增加一个模型名称；需通过真实用例验证。',
+          buyer: 'AI 应用平台 / 解决方案 / 开发者体验负责人',
+          nextAction: '用同一 RAG 任务做一份 20 分钟模型 API 对照样例，只展示可复现指标。',
+          status: 'pending', scores: { signal: 5, fit: 5, timing: 4, access: 3 }
+        },
+        {
+          id: 'flowise', name: 'Flowise', source: { label: '官方 GitHub · FlowiseAI/Flowise', url: 'https://github.com/FlowiseAI/Flowise' },
+          signal: '官方仓库已标记 Public archive，README 指向 Future of Flowise 讨论。',
+          hypothesis: '归档是反信号：不应仅凭历史热度安排主动触达，先确认项目治理与迁移去向。',
+          buyer: '不适用；本卡仅保留生态观察',
+          nextAction: '阅读归档讨论并记录迁移线索，本周不做销售触达。',
+          status: 'hold', archived: true, scores: { signal: 5, fit: 2, timing: 1, access: 1 }
+        }
+      ],
+      growth: [
+        {
+          id: 'growth-target', lesson: '学会把提示词从“压字数”改成“是否真正体现成长”。',
+          project: '成长日志自动化', conversation: '2026-11-18 17:30 / 提示词重写',
+          evidence: '同一期记录显示，新目标被写入自动化并在下一轮执行；只能证明目标函数已改，不宣称质量已经提升。',
+          businessLink: '商机周报也不能以“更短、更多”为目标，应改成“是否能指导下一次人工验证”。',
+          nextExperiment: '下周给每张卡增加一句可证伪条件，导出后逐条检查。'
+        },
+        {
+          id: 'growth-context', lesson: '学会把长上下文漂移当作交接节点，而不是继续硬聊。',
+          project: '跨会话项目交接', conversation: '2026-11-20 18:02—18:38 / 封板与续跑',
+          evidence: '先写交接文档，再让新会话按固定入口续跑；证明的是交接动作发生，不等同于交接内容完美。',
+          businessLink: '持续做雷达需要把来源、假设、审核状态沉淀到文件，而不是藏在一条长对话里。',
+          nextExperiment: '用 Skill 导出一个新工作区，确认新会话仅凭文件就能复现周报。'
+        }
+      ]
+    };
+  </script>
+
+  <script id="core-logic">
+    const RadarCore = (() => {
+      const statusLabels = { pending: '待人工审核', follow: '进入跟进', hold: '暂缓' };
+      const clean = (value, fallback = '') => String(value ?? fallback).trim();
+      function normalizeConfig(input = {}) {
+        const parsed = Number.parseInt(input.maxCards, 10);
+        return {
+          name: clean(input.name, 'AI 商机雷达') || 'AI 商机雷达',
+          focus: clean(input.focus, '公开技术信号与商业机会') || '公开技术信号与商业机会',
+          period: clean(input.period, '本周') || '本周',
+          maxCards: Number.isFinite(parsed) ? Math.min(10, Math.max(1, parsed)) : 5
+        };
+      }
+      function validateOpportunity(item = {}) {
+        const errors = [];
+        for (const key of ['name', 'signal', 'hypothesis', 'buyer', 'nextAction']) if (!clean(item[key])) errors.push(key);
+        if (!item.source || !clean(item.source.url) || !/^https:\/\/[^\s]+$/i.test(item.source.url)) errors.push('source.url');
+        return errors;
+      }
+      function validateGrowth(item = {}) {
+        const errors = [];
+        for (const key of ['lesson', 'project', 'conversation', 'evidence', 'businessLink', 'nextExperiment']) if (!clean(item[key])) errors.push(key);
+        if (Object.prototype.hasOwnProperty.call(item, 'rawTranscript')) errors.push('rawTranscript');
+        return errors;
+      }
+      function scoreOpportunity(item = {}) {
+        const scores = item.scores || {};
+        return ['signal', 'fit', 'timing', 'access'].reduce((total, key) => total + Math.min(5, Math.max(0, Number(scores[key]) || 0)), 0) * 5;
+      }
+      function reviewSuggestion(item = {}) { return item.archived ? 'hold' : (scoreOpportunity(item) >= 65 ? 'follow' : 'pending'); }
+      function setReviewStatus(item, status) {
+        if (!Object.hasOwn(statusLabels, status)) throw new Error('Invalid review status');
+        return { ...item, status };
+      }
+      function summarize(items = []) {
+        return items.reduce((sum, item) => { sum.total += 1; sum[item.status in statusLabels ? item.status : 'pending'] += 1; return sum; }, { total: 0, pending: 0, follow: 0, hold: 0 });
+      }
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+      }
+      function buildMarkdown(configInput, opportunities = [], growth = []) {
+        const config = normalizeConfig(configInput);
+        const lines = [`# ${config.name}`, '', `- 周期：${config.period}`, `- 方向：${config.focus}`, '- 口径：公开信号为事实来源，商业假设待人工验证；不代表采购意向或实际成交。', '', '## 商机卡', ''];
+        opportunities.forEach((item, index) => {
+          lines.push(`### ${index + 1}. ${item.name}`, '', `- 审核状态：${statusLabels[item.status] || statusLabels.pending}`, `- 公开信号：${item.signal}`, `- 来源：[${item.source.label || '公开来源'}](${item.source.url})`, `- 商业假设：${item.hypothesis}`, `- 待验证买方：${item.buyer}`, `- 下一动作：${item.nextAction}`, '');
+        });
+        lines.push('## 人的成长', '');
+        growth.forEach((item, index) => {
+          lines.push(`### ${index + 1}. ${item.lesson}`, '', `- 来源项目：${item.project}`, `- 对话定位：${item.conversation}`, `- 证据与边界：${item.evidence}`, `- 商业关联：${item.businessLink}`, `- 下一实验：${item.nextExperiment}`, '');
+        });
+        lines.push('---', '由可自定义的商机雷达 Skill 生成；公开分享前请再次脱敏。');
+        return lines.join('\n');
+      }
+      return { normalizeConfig, validateOpportunity, validateGrowth, scoreOpportunity, reviewSuggestion, setReviewStatus, summarize, escapeHtml, buildMarkdown, statusLabels };
+    })();
+  </script>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = 'api-opportunity-radar-v1';
+      const clone = value => JSON.parse(JSON.stringify(value));
+      let state = clone(INITIAL_DATA);
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (saved && saved.config && Array.isArray(saved.opportunities) && Array.isArray(saved.growth)) state = saved;
+      } catch (_) { /* A broken local draft never blocks the demo. */ }
+      const $ = selector => document.querySelector(selector);
+      const $$ = selector => [...document.querySelectorAll(selector)];
+      const esc = RadarCore.escapeHtml;
+      const two = number => String(number).padStart(2, '0');
+      function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) { toast('浏览器未允许本地保存，请先导出周报。'); } }
+      function toast(message) { const node = $('#toast'); node.textContent = message; node.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => node.classList.remove('show'), 2600); }
+      function render() {
+        state.config = RadarCore.normalizeConfig(state.config);
+        $$('[data-radar-name]').forEach(node => { node.textContent = state.config.name; });
+        $('[data-period]').textContent = state.config.period;
+        $('[data-focus]').textContent = state.config.focus;
+        document.title = `${state.config.name} · 公开信号 × 人的成长`;
+        const summary = RadarCore.summarize(state.opportunities);
+        $('#stat-total').textContent = two(summary.total);
+        $('#stat-growth').textContent = two(state.growth.length);
+        $('#stat-follow').textContent = two(summary.follow);
+        renderOpportunities();
+        renderGrowth();
+      }
+      function renderOpportunities() {
+        const root = $('#opportunity-list');
+        if (!state.opportunities.length) { root.innerHTML = '<p class="empty">本周还没有商机卡。先添加一条有公开来源、也有下一动作的信号。</p>'; return; }
+        root.innerHTML = state.opportunities.map(item => {
+          const score = RadarCore.scoreOpportunity(item);
+          const sourceLabel = item.source.label || '手动添加 · 公开来源';
+          return `<article class="opportunity" data-id="${esc(item.id)}">
+            <div class="opp-identity"><span class="status ${esc(item.status)}">${esc(RadarCore.statusLabels[item.status] || '待人工审核')}</span><h3 class="opp-name">${esc(item.name)}</h3><a class="source-link" href="${esc(item.source.url)}" target="_blank" rel="noopener">${esc(sourceLabel)} ↗</a><div class="score">信号整理分 ${score}/100<div class="score-bar" aria-hidden="true"><span style="width:${score}%"></span></div></div></div>
+            <div class="opp-body"><p class="signal">${esc(item.signal)}</p><p class="hypothesis"><strong>假设待核验：</strong>${esc(item.hypothesis)}</p><div class="opp-meta"><div><span class="meta-label">待验证买方</span><p class="meta-value">${esc(item.buyer)}</p></div><div><span class="meta-label">下一动作</span><p class="meta-value">${esc(item.nextAction)}</p></div></div><div class="review-row"><span class="meta-label">分数只用于整理证据，不是成交概率</span><div class="review-buttons"><button class="btn btn-small ${item.status === 'follow' ? 'active' : ''}" type="button" data-review="follow" data-id="${esc(item.id)}" aria-pressed="${item.status === 'follow'}">进入跟进</button><button class="btn btn-small ${item.status === 'hold' ? 'active' : ''}" type="button" data-review="hold" data-id="${esc(item.id)}" aria-pressed="${item.status === 'hold'}">暂缓</button></div></div></div>
+          </article>`;
+        }).join('');
+      }
+      function renderGrowth() {
+        const root = $('#growth-list');
+        if (!state.growth.length) { root.innerHTML = '<p class="empty">本周还没有成长证据。先记录一个“以前怎么做、现在怎么做”的具体变化。</p>'; return; }
+        root.innerHTML = state.growth.map((item, index) => `<article class="growth-item"><span class="growth-marker">${two(index + 1)}</span><div><h3>${esc(item.lesson)}</h3><div class="evidence-grid"><p class="evidence-cell"><strong>来源项目</strong>${esc(item.project)}</p><p class="evidence-cell"><strong>对话定位</strong>${esc(item.conversation)}</p><p class="evidence-cell"><strong>证据与结论边界</strong>${esc(item.evidence)}</p></div><p class="business-link"><strong>怎样改善商业产出：</strong>${esc(item.businessLink)}</p><p class="next-experiment"><span class="meta-label">下一周实验</span>${esc(item.nextExperiment)}</p></div></article>`).join('');
+      }
+      function openDialog(id) {
+        const dialog = document.getElementById(id);
+        if (id === 'settings-dialog') {
+          const form = $('#settings-form');
+          for (const key of ['name', 'focus', 'period', 'maxCards']) form.elements[key].value = state.config[key];
+        }
+        dialog.showModal();
+      }
+      function closeDialog(button) { button.closest('dialog').close(); }
+      function formObject(form) { return Object.fromEntries(new FormData(form).entries()); }
+      function showError(form, message) { form.querySelector('.form-error').textContent = message; }
+      function exportMarkdown() {
+        const markdown = RadarCore.buildMarkdown(state.config, state.opportunities, state.growth);
+        const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url; link.download = `${state.config.name.replace(/[\\/:*?"<>|]/g, '-')}-${state.config.period.replace(/[\\/:*?"<>|]/g, '-')}.md`;
+        document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+        toast('周报已按当前审核状态导出。');
+      }
+      $$('[data-open]').forEach(button => button.addEventListener('click', () => openDialog(button.dataset.open)));
+      $$('[data-close]').forEach(button => button.addEventListener('click', () => closeDialog(button)));
+      $$('[data-action="export"]').forEach(button => button.addEventListener('click', exportMarkdown));
+      $('[data-action="reset"]').addEventListener('click', () => { localStorage.removeItem(STORAGE_KEY); state = clone(INITIAL_DATA); render(); toast('已恢复到演示快照。'); });
+      $('#opportunity-list').addEventListener('click', event => {
+        const button = event.target.closest('[data-review]');
+        if (!button) return;
+        const index = state.opportunities.findIndex(item => item.id === button.dataset.id);
+        if (index < 0) return;
+        state.opportunities[index] = RadarCore.setReviewStatus(state.opportunities[index], button.dataset.review);
+        save(); render();
+      });
+      $$('dialog').forEach(dialog => dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); }));
+      $('#settings-form').addEventListener('submit', event => {
+        event.preventDefault(); const form = event.currentTarget; const values = formObject(form);
+        if (!values.name.trim() || !values.focus.trim() || !values.period.trim()) { showError(form, '请补全名称、方向和周期。'); return; }
+        state.config = RadarCore.normalizeConfig(values); save(); render(); form.closest('dialog').close(); showError(form, ''); toast('雷达配置已保存到本机。');
+      });
+      $('#opportunity-form').addEventListener('submit', event => {
+        event.preventDefault(); const form = event.currentTarget; const values = formObject(form);
+        const item = { id: `opp-${Date.now()}`, name: values.name, source: { label: '手动添加 · 公开来源', url: values.url }, signal: values.signal, hypothesis: values.hypothesis, buyer: values.buyer, nextAction: values.nextAction, status: 'pending', scores: { signal: 3, fit: 3, timing: 3, access: 3 } };
+        const errors = RadarCore.validateOpportunity(item);
+        if (errors.length) { showError(form, errors.includes('source.url') ? '请补全字段，并使用有效的 HTTPS 公开来源。' : '请补全所有必填字段。'); return; }
+        if (state.opportunities.length >= state.config.maxCards) { showError(form, `本周最多保留 ${state.config.maxCards} 张卡，请先暂缓或导出后再整理。`); return; }
+        state.opportunities.push(item); save(); render(); form.reset(); form.closest('dialog').close(); showError(form, ''); toast('新商机已进入人工审阅。');
+      });
+      $('#growth-form').addEventListener('submit', event => {
+        event.preventDefault(); const form = event.currentTarget; const values = formObject(form);
+        const item = { id: `growth-${Date.now()}`, lesson: values.lesson, project: values.project, conversation: values.conversation, evidence: values.evidence, businessLink: values.businessLink, nextExperiment: values.nextExperiment };
+        const errors = RadarCore.validateGrowth(item);
+        if (errors.length) { showError(form, '请补全成长、项目、对话定位、证据、商业关联和下一实验。'); return; }
+        state.growth.push(item); save(); render(); form.reset(); form.closest('dialog').close(); showError(form, ''); toast('成长证据已加入本周复盘。');
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>
